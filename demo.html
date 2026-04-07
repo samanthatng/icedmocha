@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>icedmocha.ai — Live Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:#f2efe8;color:#1a1a1a;min-height:100vh;}
+
+/* NAV */
+nav{background:rgba(250,250,248,0.95);border-bottom:0.5px solid #e5e4de;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-size:17px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px;text-decoration:none;}
+.logo span{color:#7c6f5b;}
+.demo-tag{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:#f2efe8;color:#7c6f5b;border:0.5px solid #d4c9b8;border-radius:12px;padding:4px 12px;}
+.back-link{font-size:13px;color:#6b6b60;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.back-link:hover{color:#1a1a1a;}
+
+/* DEMO LAYOUT */
+.demo-wrap{max-width:1080px;margin:0 auto;padding:28px 24px;}
+.demo-intro{text-align:center;margin-bottom:28px;}
+.demo-intro h1{font-size:28px;font-weight:700;letter-spacing:-0.5px;color:#1a1a1a;margin-bottom:8px;}
+.demo-intro p{font-size:15px;color:#6b6b60;max-width:480px;margin:0 auto;}
+
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+/* PANEL */
+.panel{background:#fff;border:0.5px solid #e5e4de;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;}
+.panel-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#9a9a8e;padding:18px 22px 0;}
+
+/* CHECKOUT */
+.checkout-inner{padding:16px 22px 22px;flex:1;display:flex;flex-direction:column;}
+.merchant-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:0.5px solid #f0efe8;}
+.merchant-avatar{width:38px;height:38px;border-radius:10px;background:#f2efe8;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.merchant-name{font-size:14px;font-weight:600;color:#1a1a1a;}
+.merchant-sub{font-size:12px;color:#9a9a8e;}
+.amount-block{text-align:center;margin:12px 0 16px;}
+.amount-label{font-size:11px;color:#9a9a8e;margin-bottom:3px;}
+.amount-value{font-size:34px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;}
+
+/* Scenarios */
+.scenario-label{font-size:11px;font-weight:600;color:#9a9a8e;letter-spacing:0.5px;margin-bottom:7px;display:block;}
+.scenario-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.scenario-pill{font-size:12px;padding:5px 11px;border-radius:16px;border:0.5px solid #e5e4de;background:#fafaf8;color:#5a5a54;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.scenario-pill:hover{border-color:#9a9a8e;}
+.scenario-pill.selected{background:#1a1a1a;color:#fafaf8;border-color:#1a1a1a;}
+
+/* Method tabs */
+.method-tabs{display:flex;background:#f7f6f2;border-radius:12px;padding:3px;margin-bottom:16px;}
+.method-tab{flex:1;text-align:center;padding:8px 4px;font-size:13px;color:#6b6b60;border-radius:10px;cursor:pointer;font-weight:500;transition:all 0.15s;white-space:nowrap;}
+.method-tab.active{background:#1a1a1a;color:#fafaf8;}
+
+/* Form */
+.form-group{margin-bottom:10px;}
+.form-label{font-size:11px;font-weight:600;color:#9a9a8e;letter-spacing:0.5px;margin-bottom:4px;display:block;}
+.form-input{width:100%;background:#fafaf8;border:0.5px solid #e5e4de;border-radius:10px;padding:10px 13px;font-size:14px;color:#1a1a1a;outline:none;font-family:inherit;transition:border-color 0.15s;}
+.form-input:focus{border-color:#9a9a8e;}
+.form-input::placeholder{color:#c0beb8;}
+.form-row{display:flex;gap:8px;}
+.form-row .form-group{flex:1;}
+
+/* Pay button */
+.pay-btn{width:100%;background:#1a1a1a;color:#fafaf8;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-top:4px;}
+.pay-btn:hover{background:#333;}
+.secure-row{display:flex;align-items:center;gap:5px;justify-content:center;margin-top:10px;font-size:11px;color:#aaa;}
+
+/* PayNow */
+.paynow-block{text-align:center;padding:4px 0;}
+.qr-mock{width:130px;height:130px;background:#f7f6f2;border:0.5px solid #e5e4de;border-radius:12px;margin:10px auto;display:flex;align-items:center;justify-content:center;}
+.paynow-amount{font-size:22px;font-weight:700;color:#1a1a1a;margin:8px 0 3px;}
+.paynow-ref{font-size:12px;color:#9a9a8e;}
+.paynow-timer{font-size:13px;color:#7c6f5b;font-weight:500;margin-top:8px;}
+
+/* Crypto */
+.crypto-coins{display:flex;flex-direction:column;gap:8px;}
+.crypto-coin{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:0.5px solid #e5e4de;border-radius:12px;cursor:pointer;transition:all 0.15s;}
+.crypto-coin:hover{border-color:#9a9a8e;background:#fafaf8;}
+.crypto-coin.selected{border-color:#1a1a1a;background:#fafaf8;}
+.coin-left{display:flex;align-items:center;gap:10px;}
+.coin-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+.coin-name{font-size:13px;font-weight:600;color:#1a1a1a;}
+.coin-sub{font-size:11px;color:#9a9a8e;}
+.coin-amount{font-size:13px;font-weight:600;color:#1a1a1a;text-align:right;}
+.coin-usd{font-size:11px;color:#9a9a8e;}
+.crypto-addr{background:#f7f6f2;border-radius:10px;padding:12px;margin-top:12px;}
+.crypto-addr-label{font-size:11px;color:#9a9a8e;margin-bottom:5px;}
+.crypto-addr-val{font-size:11px;color:#1a1a1a;font-family:monospace;word-break:break-all;}
+
+/* Result overlay */
+.result-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 22px;text-align:center;flex:1;}
+.result-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.result-title{font-size:19px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
+.result-sub{font-size:13px;color:#6b6b60;margin-bottom:16px;line-height:1.5;}
+.result-ref{font-size:11px;color:#9a9a8e;font-family:monospace;background:#f7f6f2;padding:6px 12px;border-radius:8px;display:inline-block;margin-bottom:18px;}
+.reset-btn{background:transparent;border:0.5px solid #ccc;border-radius:20px;padding:9px 22px;font-size:13px;color:#5a5a54;cursor:pointer;font-family:inherit;}
+.reset-btn:hover{border-color:#999;}
+
+/* RISK PANEL */
+.risk-inner{padding:16px 22px 22px;flex:1;display:flex;flex-direction:column;}
+.risk-status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.risk-live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:#2d7a4f;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4caf7d;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.risk-mode{font-size:11px;color:#9a9a8e;text-align:right;max-width:160px;}
+
+/* Gauge */
+.gauge-wrap{text-align:center;margin-bottom:18px;padding:16px;background:#fafaf8;border-radius:14px;border:0.5px solid #f0efe8;}
+.gauge-title{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:#9a9a8e;margin-bottom:8px;}
+.gauge-score{font-size:40px;font-weight:700;color:#1a1a1a;line-height:1;margin-bottom:6px;}
+.gauge-verdict{font-size:12px;font-weight:600;padding:4px 14px;border-radius:12px;display:inline-block;margin-bottom:10px;}
+.gauge-bar-bg{height:7px;border-radius:4px;background:#f0efe8;overflow:hidden;}
+.gauge-bar-fill{height:100%;border-radius:4px;transition:width 0.7s cubic-bezier(.4,0,.2,1),background 0.4s;width:0%;background:#e5e4de;}
+.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:#b0b0a8;margin-top:4px;}
+.gauge-desc{font-size:12px;color:#9a9a8e;margin-top:8px;line-height:1.4;}
+
+/* Signals */
+.signals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.signal{background:#fafaf8;border:0.5px solid #f0efe8;border-radius:10px;padding:10px 12px;}
+.signal-name{font-size:10px;color:#9a9a8e;margin-bottom:3px;font-weight:600;letter-spacing:0.3px;}
+.signal-val{font-size:12px;font-weight:600;color:#1a1a1a;}
+.signal-bar{height:3px;border-radius:2px;margin-top:5px;background:#e5e4de;overflow:hidden;}
+.signal-fill{height:100%;border-radius:2px;transition:width 0.5s,background 0.3s;width:0%;background:#e5e4de;}
+
+/* Txn log */
+.txn-log{border-top:0.5px solid #f0efe8;padding-top:12px;flex:1;}
+.txn-log-label{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:#9a9a8e;margin-bottom:8px;}
+.txn-items{display:flex;flex-direction:column;gap:5px;max-height:140px;overflow-y:auto;}
+.txn-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fafaf8;border-radius:8px;border:0.5px solid #f0efe8;}
+.txn-left{font-size:12px;color:#1a1a1a;font-weight:500;}
+.txn-meta{font-size:10px;color:#9a9a8e;}
+.txn-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px;white-space:nowrap;}
+
+/* MOBILE */
+@media(max-width:700px){
+  nav{padding:12px 16px;}
+  .demo-wrap{padding:16px 12px;}
+  .demo-intro h1{font-size:22px;}
+  .demo-grid{grid-template-columns:1fr;gap:14px;}
+  .amount-value{font-size:28px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">icedmocha<span>.ai</span></a>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="index.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#6b6b60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to site
+    </a>
+    <div class="demo-tag">Live Demo</div>
+  </div>
+</nav>
+
+<div class="demo-wrap">
+  <div class="demo-intro">
+    <h1>See icedmocha.ai in action</h1>
+    <p>Try different payment scenarios and watch the AI risk engine score each transaction in real time.</p>
+  </div>
+
+  <div class="demo-grid">
+
+    <!-- LEFT: CHECKOUT -->
+    <div class="panel">
+      <div class="panel-label">Customer checkout</div>
+      <div class="checkout-inner" id="checkout-panel">
+        <div class="merchant-row">
+          <div class="merchant-avatar">🛍️</div>
+          <div>
+            <div class="merchant-name">Merchant Store Demo</div>
+            <div class="merchant-sub">Singapore · icedmocha.ai</div>
+          </div>
+        </div>
+
+        <div class="amount-block">
+          <div class="amount-label">Amount due</div>
+          <div class="amount-value" id="amount-display">SGD 188.00</div>
+        </div>
+
+        <span class="scenario-label">Try a scenario</span>
+        <div class="scenario-pills">
+          <div class="scenario-pill selected" onclick="selectScenario(this,'normal')">Normal purchase</div>
+          <div class="scenario-pill" onclick="selectScenario(this,'highvalue')">High-value order</div>
+          <div class="scenario-pill" onclick="selectScenario(this,'fraud')">Suspicious card</div>
+          <div class="scenario-pill" onclick="selectScenario(this,'review')">Borderline risk</div>
+        </div>
+
+        <div class="method-tabs">
+          <div class="method-tab active" onclick="switchMethod(this,'card')">Card</div>
+          <div class="method-tab" onclick="switchMethod(this,'paynow')">PayNow</div>
+          <div class="method-tab" onclick="switchMethod(this,'crypto')">Crypto</div>
+        </div>
+
+        <!-- Card -->
+        <div id="method-card">
+          <div class="form-group">
+            <label class="form-label">Card number</label>
+            <input class="form-input" id="card-num" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cardholder name</label>
+            <input class="form-input" id="card-name" placeholder="Name on card"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiry</label>
+              <input class="form-input" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">CVC</label>
+              <input class="form-input" placeholder="•••" maxlength="3" type="password"/>
+            </div>
+          </div>
+          <button class="pay-btn" id="pay-btn" onclick="runScoring('card')">Pay SGD 188.00</button>
+          <div class="secure-row" id="secure-row">
+            <svg width="11" height="12" viewBox="0 0 12 14" fill="none"><path d="M6 1L11 3.5v4C11 10.5 8.5 13 6 13.5 3.5 13 1 10.5 1 7.5v-4L6 1z" stroke="#b0b0a8" stroke-width="1" fill="none"/></svg>
+            Secured by icedmocha.ai · AI fraud protection active
+          </div>
+        </div>
+
+        <!-- PayNow -->
+        <div id="method-paynow" style="display:none;">
+          <div class="paynow-block">
+            <div style="font-size:13px;color:#6b6b60;margin-bottom:4px;">Scan with your bank app or PayLah!</div>
+            <div class="qr-mock">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <rect x="5" y="5" width="35" height="35" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                <rect x="13" y="13" width="19" height="19" rx="1" fill="#1a1a1a"/>
+                <rect x="60" y="5" width="35" height="35" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                <rect x="68" y="13" width="19" height="19" rx="1" fill="#1a1a1a"/>
+                <rect x="5" y="60" width="35" height="35" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                <rect x="13" y="68" width="19" height="19" rx="1" fill="#1a1a1a"/>
+                <rect x="50" y="50" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="62" y="50" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="74" y="50" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="86" y="50" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="50" y="62" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="74" y="62" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="50" y="74" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="62" y="74" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="86" y="74" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="50" y="86" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="74" y="86" width="7" height="7" fill="#1a1a1a"/>
+                <rect x="86" y="86" width="7" height="7" fill="#1a1a1a"/>
+              </svg>
+            </div>
+            <div class="paynow-amount" id="paynow-amount">SGD 188.00</div>
+            <div class="paynow-ref">Ref: ICM-20250407-0042</div>
+            <div class="paynow-timer" id="paynow-timer">Expires in 14:59</div>
+          </div>
+          <button class="pay-btn" style="margin-top:14px;" onclick="runScoring('paynow')">Simulate PayNow received</button>
+        </div>
+
+        <!-- Crypto -->
+        <div id="method-crypto" style="display:none;">
+          <div class="crypto-coins">
+            <div class="crypto-coin selected" onclick="selectCoin(this)">
+              <div class="coin-left">
+                <div class="coin-icon" style="background:#e8f5e9;color:#2e7d32;">₮</div>
+                <div><div class="coin-name">USDT</div><div class="coin-sub">Tether · ERC-20</div></div>
+              </div>
+              <div><div class="coin-amount">188.22 USDT</div><div class="coin-usd">≈ SGD 188.00</div></div>
+            </div>
+            <div class="crypto-coin" onclick="selectCoin(this)">
+              <div class="coin-left">
+                <div class="coin-icon" style="background:#e3f2fd;color:#1565c0;">$</div>
+                <div><div class="coin-name">USDC</div><div class="coin-sub">USD Coin · ERC-20</div></div>
+              </div>
+              <div><div class="coin-amount">188.19 USDC</div><div class="coin-usd">≈ SGD 188.00</div></div>
+            </div>
+            <div class="crypto-coin" onclick="selectCoin(this)">
+              <div class="coin-left">
+                <div class="coin-icon" style="background:#ede7f6;color:#4527a0;">Ξ</div>
+                <div><div class="coin-name">ETH</div><div class="coin-sub">Ethereum · Mainnet</div></div>
+              </div>
+              <div><div class="coin-amount">0.0521 ETH</div><div class="coin-usd">≈ SGD 188.00</div></div>
+            </div>
+          </div>
+          <div class="crypto-addr">
+            <div class="crypto-addr-label">Send to wallet address</div>
+            <div class="crypto-addr-val">0x4f8A3c9d1E2b...d9E21b87F3</div>
+          </div>
+          <button class="pay-btn" style="margin-top:12px;" onclick="runScoring('crypto')">I've sent the payment</button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="result-overlay" id="result-overlay"></div>
+    </div>
+
+    <!-- RIGHT: RISK PANEL -->
+    <div class="panel">
+      <div class="panel-label">AI risk engine</div>
+      <div class="risk-inner">
+        <div class="risk-status-bar">
+          <div class="risk-live"><div class="live-dot"></div> Live scoring</div>
+          <div class="risk-mode" id="risk-mode">Awaiting transaction...</div>
+        </div>
+
+        <div class="gauge-wrap">
+          <div class="gauge-title">Risk score</div>
+          <div class="gauge-score" id="gauge-score">—</div>
+          <div class="gauge-verdict" id="gauge-verdict" style="background:#f7f6f2;color:#9a9a8e;">Idle</div>
+          <div class="gauge-bar-bg">
+            <div class="gauge-bar-fill" id="gauge-fill"></div>
+          </div>
+          <div class="gauge-labels"><span>Low risk</span><span>High risk</span></div>
+          <div class="gauge-desc" id="gauge-desc">Submit a payment to see real-time scoring</div>
+        </div>
+
+        <div class="signals">
+          <div class="signal">
+            <div class="signal-name">Velocity check</div>
+            <div class="signal-val" id="sig-velocity">—</div>
+            <div class="signal-bar"><div class="signal-fill" id="sfill-velocity"></div></div>
+          </div>
+          <div class="signal">
+            <div class="signal-name">Geo-location</div>
+            <div class="signal-val" id="sig-geo">—</div>
+            <div class="signal-bar"><div class="signal-fill" id="sfill-geo"></div></div>
+          </div>
+          <div class="signal">
+            <div class="signal-name">Card pattern</div>
+            <div class="signal-val" id="sig-card">—</div>
+            <div class="signal-bar"><div class="signal-fill" id="sfill-card"></div></div>
+          </div>
+          <div class="signal">
+            <div class="signal-name">Behaviour</div>
+            <div class="signal-val" id="sig-behaviour">—</div>
+            <div class="signal-bar"><div class="signal-fill" id="sfill-behaviour"></div></div>
+          </div>
+        </div>
+
+        <div class="txn-log">
+          <div class="txn-log-label">Transaction log</div>
+          <div class="txn-items" id="txn-log"><div style="font-size:12px;color:#b0b0a8;padding:8px 0;">No transactions yet — try a scenario above.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /demo-grid -->
+</div><!-- /demo-wrap -->
+
+<script>
+const scenarios={
+  normal:   {amount:'SGD 188.00',card:'4242 4242 4242 4242',name:'Sarah Tan',score:8, verdict:'approved',vel:'Normal',   geo:'Match',   cardp:'Clean',    behav:'Normal',   vp:10,gp:5, cp:8, bp:12},
+  highvalue:{amount:'SGD 4,200.00',card:'5555 5555 5555 4444',name:'James Lim',score:41,verdict:'review', vel:'Elevated', geo:'Match',   cardp:'New card', behav:'Unusual',  vp:55,gp:20,cp:60,bp:70},
+  fraud:    {amount:'SGD 980.00',card:'4000 0000 0000 0002',name:'',           score:94,verdict:'blocked',vel:'High',     geo:'Mismatch',cardp:'Flagged',   behav:'Bot-like', vp:95,gp:90,cp:98,bp:88},
+  review:   {amount:'SGD 520.00',card:'3782 822463 10005',   name:'M. Rahman', score:57,verdict:'review', vel:'Moderate', geo:'Partial', cardp:'Thin file', behav:'Hesitant', vp:50,gp:45,cp:65,bp:58}
+};
+
+let currentScenario='normal';
+let txnLog=[];
+let paynowTimer=null;
+let scoring=false;
+
+function selectScenario(el,key){
+  document.querySelectorAll('.scenario-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  currentScenario=key;
+  const s=scenarios[key];
+  document.getElementById('amount-display').textContent=s.amount;
+  document.getElementById('paynow-amount').textContent=s.amount;
+  document.getElementById('card-num').value=s.card;
+  document.getElementById('card-name').value=s.name;
+  document.getElementById('pay-btn').textContent='Pay '+s.amount;
+  resetRisk();
+}
+
+function switchMethod(el,method){
+  document.querySelectorAll('.method-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('method-card').style.display=method==='card'?'block':'none';
+  document.getElementById('method-paynow').style.display=method==='paynow'?'block':'none';
+  document.getElementById('method-crypto').style.display=method==='crypto'?'block':'none';
+  if(document.getElementById('secure-row')) document.getElementById('secure-row').style.display=method==='card'?'flex':'none';
+  if(method==='paynow') startPaynowTimer(); else clearPaynowTimer();
+}
+
+function startPaynowTimer(){
+  let secs=899; clearPaynowTimer();
+  function tick(){
+    const m=Math.floor(secs/60),s=secs%60;
+    const el=document.getElementById('paynow-timer');
+    if(el) el.textContent='Expires in '+m+':'+String(s).padStart(2,'0');
+    if(secs>0){secs--;paynowTimer=setTimeout(tick,1000);}
+  }
+  tick();
+}
+function clearPaynowTimer(){if(paynowTimer){clearTimeout(paynowTimer);paynowTimer=null;}}
+
+function fmtCard(el){let v=el.value.replace(/\D/g,'').slice(0,16);el.value=v.match(/.{1,4}/g)?.join(' ')||v;}
+function fmtExpiry(el){let v=el.value.replace(/\D/g,'');if(v.length>=2)v=v.slice(0,2)+' / '+v.slice(2,4);el.value=v;}
+function selectCoin(el){document.querySelectorAll('.crypto-coin').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+
+function runScoring(method){
+  if(scoring) return;
+  scoring=true;
+  const s=scenarios[currentScenario];
+  document.getElementById('risk-mode').textContent='Analysing transaction...';
+  document.getElementById('gauge-score').textContent='...';
+  document.getElementById('gauge-verdict').textContent='Scoring';
+  document.getElementById('gauge-verdict').style.background='#f2efe8';
+  document.getElementById('gauge-verdict').style.color='#7c6f5b';
+
+  setTimeout(()=>setSignal('velocity',s.vel,s.vp),400);
+  setTimeout(()=>setSignal('geo',s.geo,s.gp),750);
+  setTimeout(()=>setSignal('card',s.cardp,s.cp),1050);
+  setTimeout(()=>{setSignal('behaviour',s.behav,s.bp);},1350);
+  setTimeout(()=>finalScore(s,method),1800);
+}
+
+function setSignal(key,label,pct){
+  document.getElementById('sig-'+key).textContent=label;
+  const color=pct>70?'#e24b4a':pct>40?'#ef9f27':'#4caf7d';
+  const fill=document.getElementById('sfill-'+key);
+  fill.style.width=pct+'%';
+  fill.style.background=color;
+}
+
+function finalScore(s,method){
+  document.getElementById('gauge-score').textContent=s.score;
+  const fill=document.getElementById('gauge-fill');
+
+  let fillColor,vBg,vColor,vText,modeText;
+  if(s.verdict==='approved'){
+    fillColor='#4caf7d';vBg='#e8f5ee';vColor='#2d7a4f';vText='Approved';modeText='Transaction cleared';
+  }else if(s.verdict==='blocked'){
+    fillColor='#e24b4a';vBg='#fde8e8';vColor='#a32d2d';vText='Blocked';modeText='Transaction blocked';
+  }else{
+    fillColor='#ef9f27';vBg='#faeeda';vColor='#854f0b';vText='Under review';modeText='Flagged for review';
+  }
+
+  fill.style.width=s.score+'%';
+  fill.style.background=fillColor;
+  const verdict=document.getElementById('gauge-verdict');
+  verdict.style.background=vBg;verdict.style.color=vColor;verdict.textContent=vText;
+  document.getElementById('risk-mode').textContent=modeText;
+  document.getElementById('gauge-desc').textContent=
+    s.verdict==='approved'?'All signals clear. Payment authorised.':
+    s.verdict==='blocked'?'Multiple high-risk signals detected. Payment rejected.':
+    'Elevated risk detected. Flagged for manual review.';
+
+  addTxnLog(s,method,vText,vBg,vColor);
+  showResult(s,method,vText);
+  scoring=false;
+}
+
+function addTxnLog(s,method,label,bg,color){
+  txnLog.unshift({amount:s.amount,method:method==='card'?'Card':method==='paynow'?'PayNow':'Crypto',label,bg,color,score:s.score});
+  const el=document.getElementById('txn-log');
+  el.innerHTML=txnLog.slice(0,6).map(t=>`
+    <div class="txn-item">
+      <div><div class="txn-left">${t.amount} · ${t.method}</div><div class="txn-meta">Score: ${t.score}/100</div></div>
+      <div class="txn-badge" style="background:${t.bg};color:${t.color};">${t.label}</div>
+    </div>`).join('');
+}
+
+function showResult(s,method,verdict){
+  const overlay=document.getElementById('result-overlay');
+  document.getElementById('checkout-panel').style.display='none';
+  overlay.style.display='flex';
+  const refId='ICM-'+Date.now().toString().slice(-8);
+  const methodLabel=method==='card'?'card':method==='paynow'?'PayNow':'crypto';
+
+  let iconBg,iconPath,title,sub;
+  if(s.verdict==='approved'){
+    iconBg='#e8f5ee';
+    iconPath='<path d="M5 12l5 5L20 7" stroke="#2d7a4f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    title='Payment successful';
+    sub=s.amount+' received via '+methodLabel+'. Settled to your merchant account.';
+  }else if(s.verdict==='blocked'){
+    iconBg='#fde8e8';
+    iconPath='<circle cx="12" cy="12" r="9" stroke="#a32d2d" stroke-width="2" fill="none"/><path d="M15 9l-6 6M9 9l6 6" stroke="#a32d2d" stroke-width="2" stroke-linecap="round"/>';
+    title='Payment declined';
+    sub='Our AI flagged this transaction as high-risk (score: '+s.score+'/100). Blocked before processing.';
+  }else{
+    iconBg='#faeeda';
+    iconPath='<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#854f0b" stroke-width="2" fill="none"/><path d="M12 9v4m0 4h.01" stroke="#854f0b" stroke-width="2" stroke-linecap="round"/>';
+    title='Under review';
+    sub='Elevated signals detected (score: '+s.score+'/100). Your team has been notified for manual review.';
+  }
+
+  overlay.innerHTML=`
+    <div class="result-icon" style="background:${iconBg};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none">${iconPath}</svg></div>
+    <div class="result-title">${title}</div>
+    <div class="result-sub">${sub}</div>
+    <div class="result-ref">Ref: ${refId}</div>
+    <button class="reset-btn" onclick="resetDemo()">Try another scenario</button>`;
+}
+
+function resetDemo(){
+  document.getElementById('result-overlay').style.display='none';
+  document.getElementById('checkout-panel').style.display='flex';
+  document.getElementById('checkout-panel').style.flexDirection='column';
+  resetRisk();
+}
+
+function resetRisk(){
+  document.getElementById('gauge-score').textContent='—';
+  document.getElementById('gauge-fill').style.width='0%';
+  document.getElementById('gauge-fill').style.background='#e5e4de';
+  const v=document.getElementById('gauge-verdict');
+  v.textContent='Idle';v.style.background='#f7f6f2';v.style.color='#9a9a8e';
+  document.getElementById('gauge-desc').textContent='Submit a payment to see real-time scoring';
+  document.getElementById('risk-mode').textContent='Awaiting transaction...';
+  ['velocity','geo','card','behaviour'].forEach(k=>{
+    document.getElementById('sig-'+k).textContent='—';
+    const f=document.getElementById('sfill-'+k);
+    f.style.width='0%';f.style.background='#e5e4de';
+  });
+}
+</script>
+</body>
+</html>
